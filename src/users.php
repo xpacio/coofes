@@ -59,9 +59,10 @@ function admin_reset_password(int $id): array {
     return ['exito' => true, 'clave' => $clave, 'nickname' => $row['nickname'] ?? ''];
 }
 
-function crear_usuario(string $nickname, string $password, string $nombre): array {
+function crear_usuario(string $nickname, string $nombre): array {
     $db = getDB();
-    $hash = password_hash($password, PASSWORD_DEFAULT);
+    $clave = generar_clave_aleatoria();
+    $hash = password_hash($clave, PASSWORD_DEFAULT);
 
     try {
         $stmt = $db->prepare('INSERT INTO usuarios (nickname, password, nombre) VALUES (:nickname, :password, :nombre)');
@@ -70,7 +71,7 @@ function crear_usuario(string $nickname, string $password, string $nombre): arra
             ':password' => $hash,
             ':nombre' => $nombre,
         ]);
-        return ['exito' => true];
+        return ['exito' => true, 'clave' => $clave];
     } catch (PDOException $e) {
         if ($e->getCode() == 23505) {
             return ['exito' => false, 'error' => 'El nickname ya existe'];

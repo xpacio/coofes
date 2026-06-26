@@ -71,10 +71,12 @@ switch ($action) {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 die('CSRF inválido');
             }
-            $resultado = crear_usuario($_POST['nickname'], $_POST['password'], $_POST['nombre']);
+            $resultado = crear_usuario($_POST['nickname'], $_POST['nombre']);
             if ($resultado['exito']) {
-                header('Location: ?action=usuarios&creado=1');
-                exit;
+                $clave_creada = $resultado['clave'];
+                $nickname_creado = $_POST['nickname'];
+            } else {
+                $error_crear = $resultado['error'];
             }
             $error_crear = $resultado['error'];
         }

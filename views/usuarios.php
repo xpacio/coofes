@@ -1,8 +1,12 @@
 <?php require __DIR__ . '/header.php'; ?>
 <h2>Gestión de usuarios</h2>
 
-<?php if (isset($_GET['creado'])): ?>
-    <div class="success">Usuario creado correctamente</div>
+<?php if (isset($clave_creada)): ?>
+    <div class="success clave-nueva">
+        <strong>Usuario <?= htmlspecialchars($nickname_creado) ?> creado:</strong>
+        <div class="clave"><?= htmlspecialchars($clave_creada) ?></div>
+        <p class="advertencia">Copie esta contraseña ahora. No se volverá a mostrar.</p>
+    </div>
 <?php endif; ?>
 <?php if (isset($error_crear)): ?>
     <div class="error"><?= htmlspecialchars($error_crear) ?></div>
@@ -24,7 +28,6 @@
     <input type="hidden" name="crear" value="1">
     <label>Nickname: <input type="text" name="nickname" required></label>
     <label>Nombre: <input type="text" name="nombre" required></label>
-    <label>Contraseña: <input type="password" name="password" required></label>
     <button type="submit">Crear</button>
 </form>
 
