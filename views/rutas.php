@@ -44,7 +44,7 @@
                         <input type="hidden" name="toggle_ruta" value="<?= $r['id'] ?>">
                         <button type="submit"><?= $r['habilitado'] ? 'Deshabilitar' : 'Habilitar' ?></button>
                     </form>
-                    <button onclick="editarRuta(<?= $r['id'] ?>,'<?= htmlspecialchars($r['ruta'], ENT_QUOTES) ?>','<?= htmlspecialchars($r['plaza'], ENT_QUOTES) ?>')" class="btn-edit">Editar</button>
+                    <button type="button" class="btn-edit" data-id="<?= $r['id'] ?>" data-ruta="<?= htmlspecialchars($r['ruta'], ENT_QUOTES) ?>" data-plaza="<?= htmlspecialchars($r['plaza'], ENT_QUOTES) ?>">Editar</button>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -65,11 +65,16 @@
 </div>
 
 <script>
-function editarRuta(id, ruta, plaza) {
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-ruta').value = ruta;
-    document.getElementById('edit-plaza').value = plaza;
-    document.getElementById('edit-form').style.display = 'block';
-}
+(function() {
+    var btns = document.querySelectorAll('[data-id][data-ruta][data-plaza].btn-edit');
+    for (var i = 0; i < btns.length; i++) {
+        btns[i].addEventListener('click', function() {
+            document.getElementById('edit-id').value = this.getAttribute('data-id');
+            document.getElementById('edit-ruta').value = this.getAttribute('data-ruta');
+            document.getElementById('edit-plaza').value = this.getAttribute('data-plaza');
+            document.getElementById('edit-form').style.display = 'block';
+        });
+    }
+})();
 </script>
 <?php require __DIR__ . '/footer.php'; ?>
