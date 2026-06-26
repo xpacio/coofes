@@ -122,7 +122,7 @@ switch ($action) {
     case 'rutas':
         require_once __DIR__ . '/../src/rutas.php';
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_ruta'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'crear') {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 die('CSRF inválido');
             }
@@ -143,7 +143,7 @@ switch ($action) {
             exit;
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_ruta'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['accion'] ?? '') === 'editar') {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 die('CSRF inválido');
             }

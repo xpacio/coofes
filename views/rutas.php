@@ -11,13 +11,15 @@
     <div class="error"><?= htmlspecialchars($error_ruta) ?></div>
 <?php endif; ?>
 
-<h3>Nueva ruta</h3>
-<form method="POST" class="inline-form">
+<h3 id="form-title">Nueva ruta</h3>
+<form method="POST" class="inline-form" id="ruta-form">
     <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-    <input type="hidden" name="crear_ruta" value="1">
-    <label>Ruta: <input type="text" name="ruta" required placeholder="/var/smb/almar/ALMAR/"></label>
-    <label>Plaza: <input type="text" name="plaza" required placeholder="ALMAR"></label>
-    <button type="submit">Crear</button>
+    <input type="hidden" name="accion" id="ruta-accion" value="crear">
+    <input type="hidden" name="ruta_id" id="edit-id" value="">
+    <label>Ruta: <input type="text" name="ruta" id="edit-ruta" required placeholder="/var/smb/almar/ALMAR/"></label>
+    <label>Plaza: <input type="text" name="plaza" id="edit-plaza" required placeholder="ALMAR"></label>
+    <button type="submit" id="form-submit">Crear</button>
+    <button type="button" id="form-cancel" style="display:none" class="btn-cancel">Cancelar</button>
 </form>
 
 <h3>Rutas existentes</h3>
@@ -51,30 +53,39 @@
     </tbody>
 </table>
 
-<div id="edit-form" style="display:none; margin-top:1em; border:1px solid #ccc; padding:1em;">
-    <h3>Editar ruta</h3>
-    <form method="POST" class="inline-form">
-        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-        <input type="hidden" name="editar_ruta" value="1">
-        <input type="hidden" name="ruta_id" id="edit-id">
-        <label>Ruta: <input type="text" name="ruta" id="edit-ruta" required></label>
-        <label>Plaza: <input type="text" name="plaza" id="edit-plaza" required></label>
-        <button type="submit">Guardar</button>
-        <button type="button" onclick="document.getElementById('edit-form').style.display='none'" class="btn-cancel">Cancelar</button>
-    </form>
-</div>
-
 <script>
 (function() {
+    var title = document.getElementById('form-title');
+    var form = document.getElementById('ruta-form');
+    var accion = document.getElementById('ruta-accion');
+    var idInput = document.getElementById('edit-id');
+    var rutaInput = document.getElementById('edit-ruta');
+    var plazaInput = document.getElementById('edit-plaza');
+    var submitBtn = document.getElementById('form-submit');
+    var cancelBtn = document.getElementById('form-cancel');
+
     var btns = document.querySelectorAll('[data-id][data-ruta][data-plaza].btn-edit');
     for (var i = 0; i < btns.length; i++) {
         btns[i].addEventListener('click', function() {
-            document.getElementById('edit-id').value = this.getAttribute('data-id');
-            document.getElementById('edit-ruta').value = this.getAttribute('data-ruta');
-            document.getElementById('edit-plaza').value = this.getAttribute('data-plaza');
-            document.getElementById('edit-form').style.display = 'block';
+            idInput.value = this.getAttribute('data-id');
+            rutaInput.value = this.getAttribute('data-ruta');
+            plazaInput.value = this.getAttribute('data-plaza');
+            accion.value = 'editar';
+            submitBtn.textContent = 'Guardar';
+            title.textContent = 'Editar ruta';
+            cancelBtn.style.display = 'inline';
         });
     }
+
+    cancelBtn.addEventListener('click', function() {
+        idInput.value = '';
+        rutaInput.value = '';
+        plazaInput.value = '';
+        accion.value = 'crear';
+        submitBtn.textContent = 'Crear';
+        title.textContent = 'Nueva ruta';
+        cancelBtn.style.display = 'none';
+    });
 })();
 </script>
 <?php require __DIR__ . '/footer.php'; ?>
