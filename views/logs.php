@@ -3,10 +3,31 @@
 <h2>Historial de cargas</h2>
 
 <?php if (isset($_GET['restaurado'])): ?>
-    <div class="success">Archivo restaurado correctamente. Listo para restaurar otra ruta.</div>
+    <div class="success"><?= (int)$_GET['restaurado'] ?> ruta(s) restaurada(s) correctamente.</div>
 <?php endif; ?>
 <?php if (isset($_GET['error_restaurar'])): ?>
     <div class="error"><?= htmlspecialchars($_GET['error_restaurar']) ?></div>
+<?php endif; ?>
+
+<?php if (!empty($rutas_con_bak)): ?>
+<h3>Restaurar respaldo</h3>
+<form method="POST" action="?action=logs">
+    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+    <?php foreach ($rutas_con_bak as $r): ?>
+        <p class="restore-item">
+            <label>
+                <input type="checkbox" name="restaurar_rutas[]" value="<?= (int)$r['id'] ?>"<?= $r['restorable'] ? '' : ' disabled' ?>>
+                <?= htmlspecialchars($r['ruta']) ?> (<?= htmlspecialchars($r['plaza']) ?>)
+                <span class="md5-info">
+                    BAK: <code><?= substr($r['bak_md5'], -4) ?></code>
+                    DBF: <code><?= $r['dbf_md5'] ? substr($r['dbf_md5'], -4) : '—' ?></code>
+                    <?= $r['restorable'] ? '✅' : '❌ Idéntico al actual' ?>
+                </span>
+            </label>
+        </p>
+    <?php endforeach; ?>
+    <button type="submit" name="restaurar_seleccionados" value="1">Restaurar seleccionados</button>
+</form>
 <?php endif; ?>
 
 <table>
@@ -24,7 +45,6 @@
             <?php if (obtener_usuario_actual()['es_admin']): ?>
             <th>Detalle</th>
             <?php endif; ?>
-            <th>Restaurar</th>
         </tr>
     </thead>
     <tbody>
@@ -42,39 +62,10 @@
                 <?php if (obtener_usuario_actual()['es_admin']): ?>
                 <td><?= htmlspecialchars(mb_substr($log['detalle'] ?? '', 0, 200)) ?></td>
                 <?php endif; ?>
-                <td>
-                    <?php
-                    if ($log['estado'] === 'restaurado'):
-                        echo htmlspecialchars($log['detalle'] ?? '-');
-                    else:
-                        $rutas_detalle = json_decode($log['detalle'], true);
-                        if (is_array($rutas_detalle)):
-                            foreach ($rutas_detalle as $rd):
-                                if (!empty($rd['exito'])):
-                    ?>
-                            <form method="POST" action="?action=logs" class="restore-form" style="white-space:nowrap">
-                                <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-                                <input type="hidden" name="restaurar" value="<?= (int)$log['id'] ?>">
-                                <input type="hidden" name="ruta" value="<?= htmlspecialchars($rd['ruta']) ?>">
-                                <label>
-                                    <input type="checkbox" class="restore-check" onchange="this.form.querySelector('.restore-btn').disabled=!this.checked">
-                                    <?= htmlspecialchars($rd['ruta']) ?>
-                                </label>
-                                <button type="submit" class="restore-btn" disabled>Restaurar</button>
-                            </form>
-                    <?php
-                                endif;
-                            endforeach;
-                        else:
-                            echo '-';
-                        endif;
-                    endif;
-                    ?>
-                </td>
             </tr>
         <?php endforeach; ?>
         <?php if (empty($logs)): ?>
-            <tr><td colspan="<?= obtener_usuario_actual()['es_admin'] ? 11 : 10 ?>">No hay registros</td></tr>
+            <tr><td colspan="<?= obtener_usuario_actual()['es_admin'] ? 10 : 9 ?>">No hay registros</td></tr>
         <?php endif; ?>
     </tbody>
 </table>

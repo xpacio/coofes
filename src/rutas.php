@@ -47,3 +47,25 @@ function editar_ruta(int $id, string $ruta, string $plaza): array {
 function toggle_ruta(int $id): void {
     getDB()->prepare('UPDATE rutas SET habilitado = NOT habilitado WHERE id = :id')->execute([':id' => $id]);
 }
+
+function obtener_ruta_por_id(int $id): ?array {
+    $stmt = getDB()->prepare('SELECT * FROM rutas WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch() ?: null;
+}
+
+function obtener_rutas_con_bak(): array {
+    $rutas = listar_rutas();
+    $con_bak = [];
+    foreach ($rutas as $r) {
+        $dir = rtrim($r['ruta'], '/') . '/';
+        $bak = $dir . 'CO_OFES.DBF.BAK';
+        if (!file_exists($bak)) continue;
+        $dbf = $dir . 'CO_OFES.DBF';
+        $r['bak_md5'] = md5_file($bak);
+        $r['dbf_md5'] = file_exists($dbf) ? md5_file($dbf) : null;
+        $r['restorable'] = ($r['dbf_md5'] === null || $r['bak_md5'] !== $r['dbf_md5']);
+        $con_bak[] = $r;
+    }
+    return $con_bak;
+}

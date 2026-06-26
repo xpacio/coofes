@@ -39,4 +39,4 @@ CREATE TABLE rutas (
 -- Admin user: admin / admin123
 -- Generate hash: php tools/generate_hash.php
 INSERT INTO usuarios (nickname, password, nombre, es_admin)
-VALUES ('admin', '$2y$10$0WHhoSSlPjKDqJwY/FOeo.M1jKj0Qe5v8ExF76f6Pba7u3uDmB2Nq', 'Administrador', TRUE);
+VALUES ('admin', '$2y$10$pFsRmbvrkEYjC9J3skZ7UezAEQJVxxgoh7b/zvXWEA3JrcIYoKkke', 'Administrador', TRUE);

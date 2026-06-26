@@ -88,30 +88,25 @@ function procesar_upload(array $archivo, string $client_md5, ?string $fecha_arch
     }
 }
 
-function restaurar_copia(int $log_id, string $ruta): array {
-    $db = getDB();
-    $stmt = $db->prepare('SELECT * FROM logs_carga WHERE id = :id');
-    $stmt->execute([':id' => $log_id]);
-    $entry = $stmt->fetch();
-
-    if (!$entry) {
-        return ['exito' => false, 'error' => 'Entrada de log no encontrada'];
-    }
-
-    $ruta = rtrim($ruta, '/') . '/';
-    $bak = $ruta . 'CO_OFES.DBF.BAK';
-    $destino = $ruta . 'CO_OFES.DBF';
+function restaurar_copia(string $ruta, string $plaza): array {
+    $dir = rtrim($ruta, '/') . '/';
+    $bak = $dir . 'CO_OFES.DBF.BAK';
+    $destino = $dir . 'CO_OFES.DBF';
 
     if (!file_exists($bak)) {
-        return ['exito' => false, 'error' => 'No hay respaldo en ' . $ruta];
+        return ['exito' => false, 'error' => 'No hay respaldo'];
     }
 
-    if (!is_dir($ruta)) {
-        return ['exito' => false, 'error' => 'Directorio no existe: ' . $ruta];
+    if (!is_dir($dir)) {
+        return ['exito' => false, 'error' => 'Directorio no existe'];
     }
 
-    if (!is_writable($ruta)) {
-        return ['exito' => false, 'error' => 'Permisos denegados en ' . $ruta];
+    if (!is_writable($dir)) {
+        return ['exito' => false, 'error' => 'Permisos denegados'];
+    }
+
+    if (file_exists($destino) && md5_file($bak) === md5_file($destino)) {
+        return ['exito' => false, 'error' => 'El respaldo es idéntico al archivo actual'];
     }
 
     if (file_exists($destino)) {
@@ -131,17 +126,17 @@ function restaurar_copia(int $log_id, string $ruta): array {
             filesize($destino),
             md5_file($destino),
             null,
-            $entry['ruta_original'],
+            'CO_OFES.DBF',
             $ip,
             $ua,
             $idioma,
             'restaurado',
-            'Restaurado desde log #' . $log_id . ' en ' . $ruta,
-            $entry['plaza_nombre']
+            'Restaurado desde respaldo en ' . $dir,
+            $plaza
         );
 
-        return ['exito' => true, 'ruta' => $ruta];
+        return ['exito' => true, 'ruta' => $dir];
     }
 
-    return ['exito' => false, 'error' => 'Error al copiar el respaldo en ' . $ruta];
+    return ['exito' => false, 'error' => 'Error al copiar'];
 }

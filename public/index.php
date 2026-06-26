@@ -121,21 +121,34 @@ switch ($action) {
     case 'logs':
         require_once __DIR__ . '/../src/logs.php';
         require_once __DIR__ . '/../src/upload.php';
+        require_once __DIR__ . '/../src/rutas.php';
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restaurar'])) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restaurar_seleccionados'])) {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 die('CSRF inválido');
             }
-            $resultado = restaurar_copia((int)$_POST['restaurar'], $_POST['ruta']);
-            if ($resultado['exito']) {
-                header('Location: ?action=logs&restaurado=1');
+            $errores = [];
+            $ok_count = 0;
+            foreach ($_POST['restaurar_rutas'] ?? [] as $ruta_id) {
+                $info = obtener_ruta_por_id((int)$ruta_id);
+                if (!$info) continue;
+                $res = restaurar_copia($info['ruta'], $info['plaza']);
+                if ($res['exito']) {
+                    $ok_count++;
+                } else {
+                    $errores[] = $info['plaza'] . ': ' . $res['error'];
+                }
+            }
+            if ($ok_count > 0) {
+                header('Location: ?action=logs&restaurado=' . $ok_count);
             } else {
-                header('Location: ?action=logs&error_restaurar=' . urlencode($resultado['error']));
+                header('Location: ?action=logs&error_restaurar=' . urlencode(implode('; ', $errores)));
             }
             exit;
         }
 
         $logs = obtener_logs();
+        $rutas_con_bak = obtener_rutas_con_bak();
         require __DIR__ . '/../views/logs.php';
         break;
 
