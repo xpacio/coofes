@@ -1,4 +1,5 @@
 <?php require __DIR__ . '/header.php'; ?>
+<style>main{max-width:100%;}</style>
 <h2>Historial de cargas</h2>
 
 <table>
