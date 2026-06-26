@@ -7,6 +7,16 @@
 <?php if (isset($error_crear)): ?>
     <div class="error"><?= htmlspecialchars($error_crear) ?></div>
 <?php endif; ?>
+<?php if (isset($clave_reseteada)): ?>
+    <div class="success clave-nueva">
+        <strong>Contraseña nueva para <?= htmlspecialchars($nickname_reset) ?>:</strong>
+        <div class="clave"><?= htmlspecialchars($clave_reseteada) ?></div>
+        <p class="advertencia">Copie esta contraseña ahora. No se volverá a mostrar.</p>
+    </div>
+<?php endif; ?>
+<?php if (isset($error_reset)): ?>
+    <div class="error"><?= htmlspecialchars($error_reset) ?></div>
+<?php endif; ?>
 
 <h3>Nuevo usuario</h3>
 <form method="POST" class="inline-form">
@@ -44,6 +54,11 @@
                             <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
                             <input type="hidden" name="toggle_id" value="<?= $u['id'] ?>">
                             <button type="submit"><?= $u['activo'] ? 'Deshabilitar' : 'Habilitar' ?></button>
+                        </form>
+                        <form method="POST" style="display:inline">
+                            <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+                            <input type="hidden" name="resetpass_id" value="<?= $u['id'] ?>">
+                            <button type="submit" class="btn-edit">Reset pass</button>
                         </form>
                     <?php endif; ?>
                 </td>

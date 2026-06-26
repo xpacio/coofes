@@ -23,15 +23,40 @@ function generar_clave_aleatoria(int $longitud = 14): string {
     return $clave;
 }
 
-function generar_cambiar_clave(int $user_id): array {
+function generar_clave_temp(): array {
+    $clave = generar_clave_aleatoria();
+    $_SESSION['pending_password_hash'] = password_hash($clave, PASSWORD_DEFAULT);
+    return ['exito' => true, 'clave' => $clave];
+}
+
+function confirmar_cambio_clave(int $user_id): array {
+    if (empty($_SESSION['pending_password_hash'])) {
+        return ['exito' => false, 'error' => 'No hay contraseña pendiente'];
+    }
+    $db = getDB();
+    $stmt = $db->prepare('UPDATE usuarios SET password = :hash WHERE id = :id');
+    $stmt->execute([':hash' => $_SESSION['pending_password_hash'], ':id' => $user_id]);
+    unset($_SESSION['pending_password_hash']);
+    return ['exito' => true];
+}
+
+function admin_reset_password(int $id): array {
     $db = getDB();
     $clave = generar_clave_aleatoria();
     $hash = password_hash($clave, PASSWORD_DEFAULT);
 
-    $stmt = $db->prepare('UPDATE usuarios SET password = :hash WHERE id = :id');
-    $stmt->execute([':hash' => $hash, ':id' => $user_id]);
+    $stmt = $db->prepare('UPDATE usuarios SET password = :hash WHERE id = :id AND es_admin = FALSE');
+    $stmt->execute([':hash' => $hash, ':id' => $id]);
 
-    return ['exito' => true, 'clave' => $clave];
+    if ($stmt->rowCount() === 0) {
+        return ['exito' => false, 'error' => 'Usuario no encontrado o es administrador'];
+    }
+
+    $user = $db->prepare('SELECT nickname FROM usuarios WHERE id = :id');
+    $user->execute([':id' => $id]);
+    $row = $user->fetch();
+
+    return ['exito' => true, 'clave' => $clave, 'nickname' => $row['nickname'] ?? ''];
 }
 
 function crear_usuario(string $nickname, string $password, string $nombre): array {

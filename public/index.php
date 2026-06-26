@@ -54,6 +54,19 @@ switch ($action) {
             exit;
         }
 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resetpass_id'])) {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                die('CSRF inválido');
+            }
+            $resultado = admin_reset_password((int)$_POST['resetpass_id']);
+            if ($resultado['exito']) {
+                $clave_reseteada = $resultado['clave'];
+                $nickname_reset = $resultado['nickname'];
+            } else {
+                $error_reset = $resultado['error'];
+            }
+        }
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear'])) {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 die('CSRF inválido');
@@ -103,16 +116,27 @@ switch ($action) {
         require_once __DIR__ . '/../src/users.php';
         $clave_generada = null;
         $error_clave = null;
+        $confirmado = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
                 die('CSRF inválido');
             }
-            $resultado = generar_cambiar_clave(obtener_usuario_actual()['id']);
-            if ($resultado['exito']) {
-                $clave_generada = $resultado['clave'];
+
+            if (($_POST['accion'] ?? '') === 'confirmar') {
+                $resultado = confirmar_cambio_clave(obtener_usuario_actual()['id']);
+                if ($resultado['exito']) {
+                    $confirmado = true;
+                } else {
+                    $error_clave = $resultado['error'];
+                }
             } else {
-                $error_clave = $resultado['error'];
+                $resultado = generar_clave_temp();
+                if ($resultado['exito']) {
+                    $clave_generada = $resultado['clave'];
+                } else {
+                    $error_clave = $resultado['error'];
+                }
             }
         }
 
