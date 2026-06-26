@@ -13,6 +13,27 @@ function toggle_activo(int $id): void {
     $stmt->execute([':id' => $id]);
 }
 
+function generar_clave_aleatoria(int $longitud = 14): string {
+    $chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    $clave = '';
+    $max = strlen($chars) - 1;
+    for ($i = 0; $i < $longitud; $i++) {
+        $clave .= $chars[random_int(0, $max)];
+    }
+    return $clave;
+}
+
+function generar_cambiar_clave(int $user_id): array {
+    $db = getDB();
+    $clave = generar_clave_aleatoria();
+    $hash = password_hash($clave, PASSWORD_DEFAULT);
+
+    $stmt = $db->prepare('UPDATE usuarios SET password = :hash WHERE id = :id');
+    $stmt->execute([':hash' => $hash, ':id' => $user_id]);
+
+    return ['exito' => true, 'clave' => $clave];
+}
+
 function crear_usuario(string $nickname, string $password, string $nombre): array {
     $db = getDB();
     $hash = password_hash($password, PASSWORD_DEFAULT);

@@ -6,7 +6,7 @@ iniciar_sesion();
 $action = $_GET['action'] ?? 'dashboard';
 
 $public_actions = ['login'];
-$auth_actions = ['dashboard', 'logout', 'upload', 'logs', 'test'];
+$auth_actions = ['dashboard', 'logout', 'upload', 'logs', 'test', 'cambioclave'];
 $admin_actions = ['usuarios'];
 
 if (in_array($action, $public_actions)) {
@@ -99,8 +99,24 @@ switch ($action) {
         require __DIR__ . '/../views/logs.php';
         break;
 
-    case 'test':
-        require __DIR__ . '/../views/test.php';
+    case 'cambioclave':
+        require_once __DIR__ . '/../src/users.php';
+        $clave_generada = null;
+        $error_clave = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                die('CSRF inválido');
+            }
+            $resultado = generar_cambiar_clave(obtener_usuario_actual()['id']);
+            if ($resultado['exito']) {
+                $clave_generada = $resultado['clave'];
+            } else {
+                $error_clave = $resultado['error'];
+            }
+        }
+
+        require __DIR__ . '/../views/cambioclave.php';
         break;
 
     default:

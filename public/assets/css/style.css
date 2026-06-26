@@ -185,3 +185,51 @@ tr:nth-child(even) {
     0% { transform: translateX(-100%); }
     100% { transform: translateX(350%); }
 }
+
+/* Cambio de clave */
+.clave-nueva {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.clave-nueva .warning {
+    color: #856404;
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.clave-box {
+    font-family: 'Courier New', monospace;
+    font-size: 1.8rem;
+    font-weight: bold;
+    letter-spacing: 4px;
+    background: #2c3e50;
+    color: #2ecc71;
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    display: inline-block;
+    margin-bottom: 1rem;
+    user-select: all;
+}
+
+.clave-nueva .advertencia {
+    color: #721c24;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.btn {
+    display: inline-block;
+    background: #3498db;
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.btn:hover {
+    background: #2980b9;
+}

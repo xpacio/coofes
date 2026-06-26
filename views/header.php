@@ -18,6 +18,7 @@
                     <a href="?action=test">Spinner</a>
                 <?php endif; ?>
                 <span class="user"><?= htmlspecialchars(obtener_usuario_actual()['nombre']) ?></span>
+                <a href="?action=cambioclave">Cambiar contraseña</a>
                 <a href="?action=logout">Cerrar sesión</a>
             <?php endif; ?>
         </nav>
