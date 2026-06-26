@@ -41,9 +41,8 @@
 
         acceptBtn.disabled = true;
 
-        var ruta = input.value || file.name;
-        displayRuta.textContent = ruta;
-        rutaInput.value = ruta;
+        displayRuta.textContent = file.name;
+        rutaInput.value = file.name;
 
         var d = new Date(file.lastModified);
         displayFecha.textContent = d.toLocaleString('es-ES');
