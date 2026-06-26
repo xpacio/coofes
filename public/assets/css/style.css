@@ -307,3 +307,34 @@ tr:nth-child(even) {
     border-radius: 4px;
     margin-bottom: 1rem;
 }
+
+/* Restore en logs */
+.restore-form {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+}
+
+.restore-form label {
+    display: inline;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.restore-check {
+    margin-right: 0.3rem;
+}
+
+.restore-btn {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    margin-left: 0.3rem;
+}
+
+td .restore-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+td .restore-btn:disabled:hover {
+    background: #95a5a6;
+}

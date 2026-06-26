@@ -120,6 +120,21 @@ switch ($action) {
 
     case 'logs':
         require_once __DIR__ . '/../src/logs.php';
+        require_once __DIR__ . '/../src/upload.php';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['restaurar'])) {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                die('CSRF inválido');
+            }
+            $resultado = restaurar_copia((int)$_POST['restaurar'], $_POST['ruta']);
+            if ($resultado['exito']) {
+                header('Location: ?action=logs&restaurado=1');
+            } else {
+                header('Location: ?action=logs&error_restaurar=' . urlencode($resultado['error']));
+            }
+            exit;
+        }
+
         $logs = obtener_logs();
         require __DIR__ . '/../views/logs.php';
         break;

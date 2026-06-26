@@ -60,6 +60,14 @@ function procesar_upload(array $archivo, string $client_md5, ?string $fecha_arch
             continue;
         }
 
+        if (file_exists($destino)) {
+            $bak = $destino . '.BAK';
+            if (file_exists($bak)) {
+                unlink($bak);
+            }
+            rename($destino, $bak);
+        }
+
         if (copy($tmp_path, $destino)) {
             chmod($destino, 0774);
             $resultados_rutas[] = ['ruta' => $ruta, 'exito' => true];
@@ -78,4 +86,62 @@ function procesar_upload(array $archivo, string $client_md5, ?string $fecha_arch
         insertar_log($nickname, $peso_bytes, $server_md5, $fecha_archivo, $ruta_original, $ip, $ua, $idioma, 'error_ruta', $detalle, $plaza);
         return ['exito' => false, 'error' => 'No se pudo copiar el archivo a ninguna ruta', 'rutas' => $resultados_rutas];
     }
+}
+
+function restaurar_copia(int $log_id, string $ruta): array {
+    $db = getDB();
+    $stmt = $db->prepare('SELECT * FROM logs_carga WHERE id = :id');
+    $stmt->execute([':id' => $log_id]);
+    $entry = $stmt->fetch();
+
+    if (!$entry) {
+        return ['exito' => false, 'error' => 'Entrada de log no encontrada'];
+    }
+
+    $ruta = rtrim($ruta, '/') . '/';
+    $bak = $ruta . 'CO_OFES.DBF.BAK';
+    $destino = $ruta . 'CO_OFES.DBF';
+
+    if (!file_exists($bak)) {
+        return ['exito' => false, 'error' => 'No hay respaldo en ' . $ruta];
+    }
+
+    if (!is_dir($ruta)) {
+        return ['exito' => false, 'error' => 'Directorio no existe: ' . $ruta];
+    }
+
+    if (!is_writable($ruta)) {
+        return ['exito' => false, 'error' => 'Permisos denegados en ' . $ruta];
+    }
+
+    if (file_exists($destino)) {
+        unlink($destino);
+    }
+
+    if (copy($bak, $destino)) {
+        chmod($destino, 0774);
+
+        $nickname = $_SESSION['user']['nickname'] ?? 'desconocido';
+        $ip = $_SERVER['REMOTE_ADDR'] ?? null;
+        $ua = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        $idioma = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
+
+        insertar_log(
+            $nickname,
+            filesize($destino),
+            md5_file($destino),
+            null,
+            $entry['ruta_original'],
+            $ip,
+            $ua,
+            $idioma,
+            'restaurado',
+            'Restaurado desde log #' . $log_id . ' en ' . $ruta,
+            $entry['plaza_nombre']
+        );
+
+        return ['exito' => true, 'ruta' => $ruta];
+    }
+
+    return ['exito' => false, 'error' => 'Error al copiar el respaldo en ' . $ruta];
 }
