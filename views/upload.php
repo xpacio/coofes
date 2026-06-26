@@ -31,6 +31,16 @@
 
     <label>Archivo: <input type="file" name="archivo" id="archivo" accept=".dbf" required></label>
 
+    <fieldset>
+        <legend>Plaza destino:</legend>
+        <?php foreach ($plazas as $p): ?>
+            <label><input type="radio" name="plaza" value="<?= htmlspecialchars($p) ?>" required> <?= htmlspecialchars($p) ?></label>
+        <?php endforeach; ?>
+        <?php if (empty($plazas)): ?>
+            <p class="error">No hay plazas disponibles. Contacte al administrador.</p>
+        <?php endif; ?>
+    </fieldset>
+
     <div id="info-archivo" style="display:none">
         <p><strong>Ruta original:</strong> <span id="display-ruta"></span></p>
         <p><strong>Fecha del archivo:</strong> <span id="display-fecha"></span></p>

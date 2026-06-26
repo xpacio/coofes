@@ -25,7 +25,15 @@ CREATE TABLE logs_carga (
     user_agent TEXT,
     idioma VARCHAR(100),
     estado VARCHAR(50) NOT NULL,
-    detalle TEXT
+    detalle TEXT,
+    plaza_nombre VARCHAR(100)
+);
+
+CREATE TABLE rutas (
+    id SERIAL PRIMARY KEY,
+    ruta VARCHAR(500) NOT NULL UNIQUE,
+    plaza VARCHAR(100) NOT NULL,
+    habilitado BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 -- Admin user: admin / admin123

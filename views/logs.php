@@ -7,6 +7,7 @@
             <th>Fecha</th>
             <th>Usuario</th>
             <th>Archivo</th>
+            <th>Plaza</th>
             <th>Peso</th>
             <th>MD5</th>
             <th>IP</th>
@@ -20,6 +21,7 @@
                 <td><?= htmlspecialchars($log['fecha_hora']) ?></td>
                 <td><?= htmlspecialchars($log['nickname_usuario']) ?></td>
                 <td><?= htmlspecialchars($log['ruta_original'] ?? '-') ?></td>
+                <td><?= htmlspecialchars($log['plaza_nombre'] ?? '-') ?></td>
                 <td><?= $log['peso_bytes'] ? number_format($log['peso_bytes']) . ' B' : '-' ?></td>
                 <td><code><?= htmlspecialchars($log['hash_md5'] ?? '-') ?></code></td>
                 <td><?= htmlspecialchars($log['ip_origen'] ?? '-') ?></td>
@@ -28,7 +30,7 @@
             </tr>
         <?php endforeach; ?>
         <?php if (empty($logs)): ?>
-            <tr><td colspan="8">No hay registros</td></tr>
+            <tr><td colspan="9">No hay registros</td></tr>
         <?php endif; ?>
     </tbody>
 </table>

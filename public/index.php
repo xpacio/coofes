@@ -7,7 +7,7 @@ $action = $_GET['action'] ?? 'dashboard';
 
 $public_actions = ['login'];
 $auth_actions = ['dashboard', 'logout', 'upload', 'logs', 'test', 'cambioclave'];
-$admin_actions = ['usuarios'];
+$admin_actions = ['usuarios', 'rutas'];
 
 if (in_array($action, $public_actions)) {
     // no auth needed
@@ -87,7 +87,9 @@ switch ($action) {
 
     case 'upload':
         require_once __DIR__ . '/../src/upload.php';
+        require_once __DIR__ . '/../src/rutas.php';
         $resultado = null;
+        $plazas = obtener_plazas();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf($_POST['csrf_token'] ?? '')) {
@@ -95,12 +97,15 @@ switch ($action) {
             }
             if (!isset($_FILES['archivo']) || $_FILES['archivo']['error'] === UPLOAD_ERR_NO_FILE) {
                 $resultado = ['exito' => false, 'error' => 'Seleccione un archivo'];
+            } elseif (empty($_POST['plaza'])) {
+                $resultado = ['exito' => false, 'error' => 'Seleccione una plaza'];
             } else {
                 $resultado = procesar_upload(
                     $_FILES['archivo'],
                     $_POST['client_md5'] ?? '',
                     $_POST['fecha_archivo'] ?? null,
-                    $_POST['ruta_original'] ?? null
+                    $_POST['ruta_original'] ?? null,
+                    $_POST['plaza']
                 );
             }
         }
@@ -112,6 +117,46 @@ switch ($action) {
         require_once __DIR__ . '/../src/logs.php';
         $logs = obtener_logs();
         require __DIR__ . '/../views/logs.php';
+        break;
+
+    case 'rutas':
+        require_once __DIR__ . '/../src/rutas.php';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crear_ruta'])) {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                die('CSRF inválido');
+            }
+            $resultado = crear_ruta($_POST['ruta'], $_POST['plaza']);
+            if ($resultado['exito']) {
+                header('Location: ?action=rutas&creado=1');
+                exit;
+            }
+            $error_ruta = $resultado['error'];
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_ruta'])) {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                die('CSRF inválido');
+            }
+            toggle_ruta((int)$_POST['toggle_ruta']);
+            header('Location: ?action=rutas');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['editar_ruta'])) {
+            if (!verify_csrf($_POST['csrf_token'] ?? '')) {
+                die('CSRF inválido');
+            }
+            $resultado = editar_ruta((int)$_POST['ruta_id'], $_POST['ruta'], $_POST['plaza']);
+            if ($resultado['exito']) {
+                header('Location: ?action=rutas&editado=1');
+                exit;
+            }
+            $error_ruta = $resultado['error'];
+        }
+
+        $rutas = listar_rutas();
+        require __DIR__ . '/../views/rutas.php';
         break;
 
     case 'cambioclave':

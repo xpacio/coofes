@@ -15,7 +15,7 @@
                 <a href="?action=logs">Historial</a>
                 <?php if (obtener_usuario_actual()['es_admin']): ?>
                     <a href="?action=usuarios">Usuarios</a>
-                    <a href="?action=test">Spinner</a>
+                    <a href="?action=rutas">Rutas</a>
                 <?php endif; ?>
                 <span class="user"><?= htmlspecialchars(obtener_usuario_actual()['nombre']) ?></span>
                 <a href="?action=cambioclave">Cambiar contraseña</a>

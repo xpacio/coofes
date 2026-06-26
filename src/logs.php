@@ -12,10 +12,11 @@ function insertar_log(
     ?string $ua,
     ?string $idioma,
     string $estado,
-    ?string $detalle = null
+    ?string $detalle = null,
+    ?string $plaza_nombre = null
 ): void {
     $db = getDB();
-    $stmt = $db->prepare('INSERT INTO logs_carga (nickname_usuario, peso_bytes, hash_md5, fecha_archivo, ruta_original, ip_origen, user_agent, idioma, estado, detalle) VALUES (:nickname, :peso, :hash, :fecha_archivo, :ruta_original, :ip, :ua, :idioma, :estado, :detalle)');
+    $stmt = $db->prepare('INSERT INTO logs_carga (nickname_usuario, peso_bytes, hash_md5, fecha_archivo, ruta_original, ip_origen, user_agent, idioma, estado, detalle, plaza_nombre) VALUES (:nickname, :peso, :hash, :fecha_archivo, :ruta_original, :ip, :ua, :idioma, :estado, :detalle, :plaza_nombre)');
 
     $fecha_ts = null;
     if ($fecha_archivo) {
@@ -33,6 +34,7 @@ function insertar_log(
         ':idioma' => $idioma,
         ':estado' => $estado,
         ':detalle' => $detalle,
+        ':plaza_nombre' => $plaza_nombre,
     ]);
 }
 
