@@ -107,6 +107,11 @@ switch ($action) {
                     $_POST['ruta_original'] ?? null,
                     $_POST['plaza']
                 );
+                if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                    header('Content-Type: application/json');
+                    echo json_encode($resultado, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                    exit;
+                }
             }
         }
 
