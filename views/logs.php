@@ -2,34 +2,6 @@
 <style>main{max-width:100%;}</style>
 <h2>Historial de cargas</h2>
 
-<?php if (isset($_GET['restaurado'])): ?>
-    <div class="success"><?= (int)$_GET['restaurado'] ?> ruta(s) restaurada(s) correctamente.</div>
-<?php endif; ?>
-<?php if (isset($_GET['error_restaurar'])): ?>
-    <div class="error"><?= htmlspecialchars($_GET['error_restaurar']) ?></div>
-<?php endif; ?>
-
-<?php if (!empty($rutas_con_bak)): ?>
-<h3>Restaurar respaldo</h3>
-<form method="POST" action="?action=logs">
-    <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
-    <?php foreach ($rutas_con_bak as $r): ?>
-        <p class="restore-item">
-            <label>
-                <input type="checkbox" name="restaurar_rutas[]" value="<?= (int)$r['id'] ?>"<?= $r['restorable'] ? '' : ' disabled' ?>>
-                <?= htmlspecialchars($r['ruta']) ?> (<?= htmlspecialchars($r['plaza']) ?>)
-                <span class="md5-info">
-                    BAK: <code><?= substr($r['bak_md5'], -4) ?></code>
-                    DBF: <code><?= $r['dbf_md5'] ? substr($r['dbf_md5'], -4) : '—' ?></code>
-                    <?= $r['restorable'] ? '✅' : '❌ Idéntico al actual' ?>
-                </span>
-            </label>
-        </p>
-    <?php endforeach; ?>
-    <button type="submit" name="restaurar_seleccionados" value="1">Restaurar seleccionados</button>
-</form>
-<?php endif; ?>
-
 <table>
     <thead>
         <tr>

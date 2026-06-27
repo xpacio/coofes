@@ -6,7 +6,7 @@ iniciar_sesion();
 $action = $_GET['action'] ?? 'dashboard';
 
 $public_actions = ['login'];
-$auth_actions = ['dashboard', 'logout', 'upload', 'logs', 'test', 'cambioclave'];
+$auth_actions = ['dashboard', 'logout', 'upload', 'logs', 'test', 'cambioclave', 'restaurar'];
 $admin_actions = ['usuarios', 'rutas'];
 
 if (in_array($action, $public_actions)) {
@@ -120,6 +120,12 @@ switch ($action) {
 
     case 'logs':
         require_once __DIR__ . '/../src/logs.php';
+
+        $logs = obtener_logs();
+        require __DIR__ . '/../views/logs.php';
+        break;
+
+    case 'restaurar':
         require_once __DIR__ . '/../src/upload.php';
         require_once __DIR__ . '/../src/rutas.php';
 
@@ -140,16 +146,15 @@ switch ($action) {
                 }
             }
             if ($ok_count > 0) {
-                header('Location: ?action=logs&restaurado=' . $ok_count);
+                header('Location: ?action=restaurar&restaurado=' . $ok_count);
             } else {
-                header('Location: ?action=logs&error_restaurar=' . urlencode(implode('; ', $errores)));
+                header('Location: ?action=restaurar&error_restaurar=' . urlencode(implode('; ', $errores)));
             }
             exit;
         }
 
-        $logs = obtener_logs();
         $rutas_con_bak = obtener_rutas_con_bak();
-        require __DIR__ . '/../views/logs.php';
+        require __DIR__ . '/../views/restaurar.php';
         break;
 
     case 'rutas':

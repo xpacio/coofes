@@ -13,6 +13,7 @@
             <?php if (obtener_usuario_actual()): ?>
                 <a href="?action=upload">Subir archivo</a>
                 <a href="?action=logs">Historial</a>
+                <a href="?action=restaurar">Restaurar</a>
                 <?php if (obtener_usuario_actual()['es_admin']): ?>
                     <a href="?action=usuarios">Usuarios</a>
                     <a href="?action=rutas">Rutas</a>
