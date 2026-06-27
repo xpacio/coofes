@@ -4,24 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DBF Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <header>
-        <nav>
-            <a href="?">Inicio</a>
-            <?php if (obtener_usuario_actual()): ?>
-                <a href="?action=upload">Subir archivo</a>
-                <a href="?action=logs">Historial</a>
-                <a href="?action=restaurar">Restaurar</a>
-                <?php if (obtener_usuario_actual()['es_admin']): ?>
-                    <a href="?action=usuarios">Usuarios</a>
-                    <a href="?action=rutas">Rutas</a>
+        <nav class="container">
+            <ul>
+                <li><a href="?">Inicio</a></li>
+                <?php if (obtener_usuario_actual()): ?>
+                    <li><a href="?action=upload">Subir archivo</a></li>
+                    <li><a href="?action=logs">Historial</a></li>
+                    <li><a href="?action=restaurar">Restaurar</a></li>
+                    <?php if (obtener_usuario_actual()['es_admin']): ?>
+                        <li><a href="?action=usuarios">Usuarios</a></li>
+                        <li><a href="?action=rutas">Rutas</a></li>
+                    <?php endif; ?>
                 <?php endif; ?>
-                <span class="user"><?= htmlspecialchars(obtener_usuario_actual()['nombre']) ?></span>
-                <a href="?action=cambioclave">Cambiar contraseña</a>
-                <a href="?action=logout">Cerrar sesión</a>
+            </ul>
+            <?php if (obtener_usuario_actual()): ?>
+            <ul>
+                <li><a href="?action=cambioclave"><?= htmlspecialchars(obtener_usuario_actual()['nombre']) ?></a></li>
+                <li><a href="?action=logout">Cerrar sesión</a></li>
+            </ul>
             <?php endif; ?>
         </nav>
     </header>
-    <main>
+    <main class="container">
