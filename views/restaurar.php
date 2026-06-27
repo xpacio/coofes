@@ -39,8 +39,24 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    <button type="submit" name="restaurar_seleccionados" value="1">Restaurar seleccionados</button>
+    <button type="submit" name="restaurar_seleccionados" value="1" id="restore-btn" style="display:none">Restaurar seleccionados</button>
 </form>
+
+<script>
+(function() {
+    var checks = document.querySelectorAll('input[name="restaurar_rutas[]"]');
+    var btn = document.getElementById('restore-btn');
+    function toggleBtn() {
+        for (var i = 0; i < checks.length; i++) {
+            if (checks[i].checked) { btn.style.display = 'inline-block'; return; }
+        }
+        btn.style.display = 'none';
+    }
+    for (var i = 0; i < checks.length; i++) {
+        checks[i].addEventListener('change', toggleBtn);
+    }
+})();
+</script>
 <?php else: ?>
     <p>No hay respaldos disponibles para restaurar.</p>
 <?php endif; ?>

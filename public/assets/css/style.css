@@ -334,3 +334,12 @@ tr:nth-child(even) {
 .restore-item input[type="checkbox"]:disabled + .md5-info {
     color: #999;
 }
+
+#restore-btn:disabled {
+    background: #95a5a6;
+    cursor: not-allowed;
+}
+
+#restore-btn:disabled:hover {
+    background: #95a5a6;
+}
